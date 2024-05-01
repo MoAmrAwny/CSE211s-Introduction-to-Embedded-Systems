@@ -25,9 +25,8 @@
 				current_vs_final = getDistance(lati2,longi2,finalDestinationLat,finalDestinationLong);
         if (current_vs_final <= (0.05*totalDisplacement))
 					{
-            finally_arrived=0;
-						LEDs_Clear(blueLed);  // blue led off
-						LEDs_output(greenLed);  // green led on	
+                                        finally_arrived=0;
+
 					}
 					lati1=lati2;
 					longi1=longi2;
