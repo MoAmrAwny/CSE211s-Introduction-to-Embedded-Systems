@@ -8,9 +8,10 @@ visualized on a map application.
 ### Features
 The GPS system performs the following tasks:  
 
- 1.Calculate the Total Displacement From Start Point to the Desired Destination.  
+ * Calculate the Total Distance Covered By the User From the Start Point till Reaching the Desired Location.
+ * Calculate the Total Displacement From Start Point to the Desired Destination.  
  
- 2.Upon the Start the RED_LED turns ON  
+ * Upon the Start the RED_LED turns ON  
  
   .Then When SW2 Pressed BLUE_LED turns ON and the Program Starts to Read Coordinates From GPS and Send Them to Our Functions and Calculate the total Distance Covered  
   
