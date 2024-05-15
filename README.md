@@ -18,7 +18,7 @@ The GPS system performs the following tasks:
   
   .At the End We Print the Total Displacement and the Total Distance on LCD  
   
-The trajectory of the distance should satisfy the following criteria:  
+### The trajectory of the distance should satisfy the following criteria:  
  1. The total distance between the start and the end point should be > 100 meters.
  2.  The path from the start point to the end point should form a non-straight line that is similar to the provided baseline path below. 
  
