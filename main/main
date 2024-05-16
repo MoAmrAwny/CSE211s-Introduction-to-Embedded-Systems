@@ -1,1 +1,220 @@
+#include <math.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "tm4c123gh6pm.h"
+#include "Bit_Utilies.h"
+#include "GPIO.h"
+#include "GPS.h"
+#include "UART.h"
+#include "SysTick.h"
+#include "GPS_Total_Distance.h"
+#include "LCD.h"
+#include "trajectory.h"
+#define CR 0x0D
+#define CB 0x2A
 
+
+    float total_Distance=0.0;
+		float lat1;
+		float long1;
+		float lat2;
+		float long2;
+		float x=0;
+		float sum=0;
+		float current_vs_final;
+		int finally_arrived=1;
+		float totalDisplacement;
+		float totalDistance;
+////////////////LCD part//////////////////
+
+		char dis_arr[10];
+		float dis =1666667772367.454433;
+		char char_Total_Displacement[10];
+		char char_Total_Distance[10];
+		
+////////////////char array for LCD part//////////////////
+
+		int n=0; // counter
+		int m=0; // counter
+		float* total_lat;
+		float* total_long;
+		char string_Lat[10][15];
+		char string_Long[10][15];
+		int g = 0; // for printing your final lat array 
+		int k = 0; // for printing your final long array 
+
+
+/// ************************************************************************************************************************************* /// 
+ 
+ 
+
+int main() {
+	
+		float *coordi;
+		unsigned char SW_value;
+		GPIO_Init_PortF();
+		UART0_Init();
+		UART1_Init();
+		SysTick_Init();
+		SysTick_Wait10ms(500);
+		Pins_Init();
+
+while (1){
+				
+				/*program start redLed on exit when switch pressed*/
+	
+				do{
+						LEDs_output(greenLed);	
+						SW_value=read_switch2();
+				
+				}while(SW_value ==1);
+				
+				                                             
+				LEDs_Clear();																// redLed off
+			                                          	// blueLed on
+				LEDs_output(blueLed);
+				
+			////////////////////////////////////////read from the gps////////////////////////////
+				
+				coordi = GPS_OUTPUT(); 
+				lat1=coordi[0];
+				long1=coordi[1];
+				total_lat[n]=coordi[0];     //first point in array of latitudes"start point"
+				total_long[m]=coordi[1];   //first point in array of longitudes"start point"
+				
+				
+				printFloat(lat1); 
+				UART0_OutString("\n");
+				printFloat(long1);  
+				UART0_OutString("\n");
+																					//get the total displacment //
+				totalDisplacement = getDisplacement(coordi[0], coordi[1],finalDestinationLat, finalDestinationLong);		
+				UART0_OutString("total Displacement is :");
+				printFloat(totalDisplacement);
+				UART0_OutString("\n");
+				
+				
+				n++;
+				m++;
+			
+				
+				while(finally_arrived)
+				{
+				
+					SysTick_Wait10ms(100);
+					coordi=GPS_OUTPUT();
+				
+					lat2=coordi[0];
+				  long2=coordi[1];
+					
+					total_lat[n]=coordi[0];  //next point in array of latitudes
+					total_long[m]=coordi[1]; //next point in array of longitudes
+					
+					if(n<25)
+						{
+								n++;
+						}
+				  if(m<25)
+						{
+							m++;
+						}
+					
+					
+					printFloat(lat2); 
+					UART0_OutString("\n");
+					printFloat(long2);  
+					UART0_OutString("\n");
+					
+					x=getDistance(lat1,long1,lat2,long2);
+					sum=x+sum;
+					UART0_OutString("the sum is :");
+          printFloat(sum);
+          UART0_OutString("\n");
+					
+					current_vs_final=getDisplacement(lat2,long2,finalDestinationLat,finalDestinationLong);
+					UART0_OutString("your current vs final is :");
+          printFloat(current_vs_final);
+          UART0_OutString("\n");
+						
+				
+					if (current_vs_final <= (0.05*totalDisplacement))
+                    {
+											finally_arrived=0;
+
+                    }
+					if (sum>=110)
+                    {
+											finally_arrived=0;
+
+                    }
+            lat1=lat2;
+            long1=long2; 
+					
+										
+		////////// LCD part ///////////////////////////////////	
+										
+					GPIO_PORTF_DATA_R |= 0x08;
+					SysTick_Wait10ms(100);
+					GPIO_PORTF_DATA_R &= ~0x08;
+					sprintf(dis_arr,"%.3f",dis);
+					LCD_Init();
+					LCD_Cmd(0x80);				// cursor to first row and first column
+					GPIO_PORTF_DATA_R |= 0x04;
+					floatToString(sum,char_Total_Distance,10); // turn to char arr	
+					LCD_String_modified("Total Distance: ");
+					LCD_Cmd(0xC9); // set LCD seperation
+					LCD_String_modified(char_Total_Distance);
+					
+		/////////////////////////////////////////////////////
+
+        }
+
+	
+		/****///////////////Destination Reached//////////////////****/
+				
+				LCD_Cmd(0x01);		//Clear Screen
+				LCD_Cmd(0x0C);		//Cursor OFF and display ON
+				LCD_String_modified("Point Reached");
+				
+			///////////////////////////////get the total distance///////////////////////////////////////////
+				
+				
+
+				do {
+				
+				SW_value=read_switch2();
+					
+					
+					if (SW_value==0)
+					{
+	/////////////*passing the two arrays to be one string then pass it to python code using visual studio*////////////
+						UART0_OutString(trajectory(total_lat,total_long));
+						break;
+					}
+				
+				
+				}while(1);
+				
+				
+				do{
+					LEDs_output(redLed);
+					SW_value=read_switch2();
+//					/*
+//					
+//							code waiting to start the program again
+//					
+//					*/
+					
+					}while(SW_value ==1);
+
+				}
+
+					LEDs_Clear();
+					
+					return 0;
+}
+			
+// ************************************************************************************************************************************* ///
