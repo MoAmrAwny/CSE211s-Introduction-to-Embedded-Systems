@@ -1,18 +1,24 @@
-#include "BitStatus.h"
+#ifndef GPIO
+#define GPIO
+
+
+#define redLed  0x02
+#define greenLed  0x08
+#define blueLed  0x04
+
+#define yellowLed  0x06
+#define whiteLed  0x0E
+#define PF123_mask 0x0E
+
 #include "tm4c123gh6pm.h"
 
-#define PF_SW2_mask  0x01
+
+//*********************************
+void LEDs_output(unsigned char data);
+void LEDs_Clear();
 
 
-///***  FUNCTIONS  ***///
-void GPIO_PortA_Init();
-void portF_Init();
-void SW2_Init(void);
-
-//PF_SW2_mask
-unsigned char GPIO_getSwitchValue(unsigned char sw);
-void GPIO_setLedValue(unsigned char ledColor, unsigned char ledState);
-void GPIO_PORTA_setPort(unsigned char sevenSegmentValue);
-
-//switch
+void GPIO_Init_PortA(void);
+void GPIO_Init_PortF(void);
 unsigned char read_switch2();
+#endif
