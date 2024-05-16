@@ -1,1 +1,33 @@
+while(finally_arrived)
+				{
+				
+					SysTick_Wait10ms(100);
+					coordi=GPS_OUTPUT();
+				
+					lat2=coordi[0];
+				  long2=coordi[1];
+					printFloat(lat2); 
+					UART0_OutString("\n");
+					printFloat(long2);  
+					UART0_OutString("\n");
+					
+					x=getDistance(lat1,long1,lat2,long2);
+					sum=x+sum;
+					UART0_OutString("the sum is :");
+          printFloat(sum);
+          UART0_OutString("\n");
+					
+					current_vs_final=getDisplacement(lat2,long2,finalDestinationLat,finalDestinationLong);
+					UART0_OutString("your current vs final is :");
+          printFloat(current_vs_final);
+          UART0_OutString("\n");
+				
+					if (current_vs_final <= (0.3*totalDisplacement))
+                    {
+											finally_arrived=0;
 
+                    }
+            lat1=lat2;
+            long1=long2;        
+
+        }
