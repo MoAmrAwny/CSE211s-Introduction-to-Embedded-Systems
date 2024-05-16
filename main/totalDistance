@@ -1,33 +1,70 @@
-while(finally_arrived)
+				while(finally_arrived) //function to calc total distance
 				{
 				
 					SysTick_Wait10ms(100);
 					coordi=GPS_OUTPUT();
 				
 					lat2=coordi[0];
-				  long2=coordi[1];
+				        long2=coordi[1];
+					
+					total_lat[n]=coordi[0];  //to take next points in array of latitudes
+					total_long[m]=coordi[1]; //to take next points in array of longitudes
+					
+					if(n<25)
+						{
+								n++;
+						}
+				         if(m<25)
+						{
+							m++;
+						}
+					
+					
 					printFloat(lat2); 
 					UART0_OutString("\n");
 					printFloat(long2);  
 					UART0_OutString("\n");
 					
 					x=getDistance(lat1,long1,lat2,long2);
-					sum=x+sum;
+					sum=x+sum; //collect total distance in sum
 					UART0_OutString("the sum is :");
-          printFloat(sum);
-          UART0_OutString("\n");
+                                        printFloat(sum);
+                                        UART0_OutString("\n");
 					
 					current_vs_final=getDisplacement(lat2,long2,finalDestinationLat,finalDestinationLong);
 					UART0_OutString("your current vs final is :");
-          printFloat(current_vs_final);
-          UART0_OutString("\n");
+                                        printFloat(current_vs_final);
+                                        UART0_OutString("\n");
+						
 				
-					if (current_vs_final <= (0.3*totalDisplacement))
-                    {
-											finally_arrived=0;
+					if (current_vs_final <= (0.05*totalDisplacement))
+                                         {
+	                                  finally_arrived=0;
 
-                    }
-            lat1=lat2;
-            long1=long2;        
+                                         }
+					if (sum>=110)
+                                         {
+				         finally_arrived=0;
+
+                                         }
+                                         lat1=lat2;
+                                         long1=long2; 
+					
+										
+		////////// LCD part ///////////////////////////////////	
+										
+					GPIO_PORTF_DATA_R |= 0x08;
+					SysTick_Wait10ms(100);
+					GPIO_PORTF_DATA_R &= ~0x08;
+					sprintf(dis_arr,"%.3f",dis);
+					LCD_Init();
+					LCD_Cmd(0x80);				// cursor to first row and first column
+					GPIO_PORTF_DATA_R |= 0x04;
+					floatToString(sum,char_Total_Distance,10); // turn to char arr	
+					LCD_String_modified("Total Distance: ");
+					LCD_Cmd(0xC9); // set LCD seperation
+					LCD_String_modified(char_Total_Distance);
+					
+		/////////////////////////////////////////////////////
 
         }
