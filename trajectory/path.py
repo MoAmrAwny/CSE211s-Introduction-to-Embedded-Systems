@@ -94,21 +94,10 @@ def read_from_uart():
     return received_string
 
 def main():
-    # Read the string from UART
-    # example_string = read_from_uart()
-    # print("received string", example_string)
-    # # Convert the string back to arrays
-    # new_latitudes, new_longitudes = string_to_arrays(example_string)
+    
     received_data = receive_from_com('COM5', 9600)
     print("\n shghala \n")
     print(received_data)
-    # lat,lat = string_to_arrays(received_data)
-    # print(lat)
-    # print("\n lon: \n")
-    # print(lon)
-    # display_locations_on_map(lat, lon)
-
-    
 
 if __name__ == "__main__":
     main()
