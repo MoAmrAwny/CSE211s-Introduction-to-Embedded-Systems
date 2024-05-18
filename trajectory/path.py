@@ -3,31 +3,6 @@ import time
 import folium
 import os
 
-# def receive_from_com(port, baud_rate):
-#     received_strings = []  # Initialize an empty list to store received strings
-
-#     try:
-#         # Open serial port
-#         ser = serial.Serial(port, baud_rate)
-
-#         while True:
-#             # Read a line from serial port
-#             received_string = ser.readline().decode('utf-8').strip()
-            
-#             # Append the received string to the list
-#             received_strings.append(received_string)
-
-#     except serial.SerialException as e:
-#         print("Serial Exception:", e)
-#     except KeyboardInterrupt:
-#         print("Keyboard Interrupt. Exiting...")
-#     finally:
-#         if ser and ser.is_open:
-#             ser.close()
-
-#     # Join the list of received strings into a single string with newline characters
-#     return received_strings
-
 def receive_from_com(port, baud_rate):
     try:
         # Open serial port
